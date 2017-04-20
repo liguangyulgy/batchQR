@@ -1,8 +1,8 @@
 import qrcode,os,time
 from PIL import Image
 from io import BytesIO
-from quickpass_logo import ql
-import wx;
+#from quickpass_logo import ql
+# import wx;
 import xlrd
 from sys import argv
 
@@ -25,9 +25,9 @@ class ReadExcel():
 class QR:
 
     def __init__(self,script,excelFile):
-        app = wx.App()
-        bb = ql.GetData()
-        f = BytesIO(bb)
+        # app = wx.App()
+        # bb = ql.GetData()
+        # f = BytesIO(bb)
         f =BytesIO(qqlogo)
         self.dir =os.path.dirname(script)
         self.icon = Image.open(f)
