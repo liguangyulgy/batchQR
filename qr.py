@@ -24,12 +24,12 @@ class ReadExcel():
 
 class QR:
 
-    def __init__(self,script):
+    def __init__(self,script,excelFile):
         app = wx.App()
         bb = ql.GetData()
         f = BytesIO(bb)
         f =BytesIO(qqlogo)
-        self.dir = os.path.dirname(script)
+        self.dir =os.path.dirname(script)
         self.icon = Image.open(f)
         self.icon_w,self.icon_h = self.icon.size
 
@@ -61,9 +61,9 @@ class QR:
 
 def main(script,excelFile):
     datas = ReadExcel(excelFile)
-    q = QR(script)
+    q = QR(script,excelFile)
     nrows,ncols= datas.get_size()
-    x = 0;
+    x = 1;
     while x < nrows:
         name = datas.get(x,0)
         content = datas.get(x,1)
