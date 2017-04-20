@@ -56,7 +56,7 @@ class QR:
         os.makedirs(dir,exist_ok=True)
         image = self.genarateQR(content)
         ff = os.path.join(dir,str(filename)+'.png')
-        print('商户号 %s 对应二维码%s' %(filename,content))
+        print('商户号 %s  对应二维码%s' %(filename,content))
         image.save(ff)
 
 def main(script,excelFile):
