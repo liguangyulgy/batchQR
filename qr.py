@@ -1,4 +1,4 @@
-import qrcode,os,time,threading
+import qrcode,os,time,PIL
 from PIL import Image
 from io import BytesIO
 # from quickpass_logo import ql
@@ -29,7 +29,9 @@ class QR:
         # bb = ql.GetData()
         # f = BytesIO(bb)
         f =BytesIO(qqlogo)
-        self.dir =os.path.dirname(script)
+        efNm = os.path.basename(excelFile)
+        self.nn = efNm[:efNm.index('.')]
+        self.dir =os.path.join(os.path.dirname(script),)
         self.icon = Image.open(f)
         self.icon_w,self.icon_h = self.icon.size
 
@@ -52,7 +54,7 @@ class QR:
 
     def savePic(self,content,filename,dir=None):
         if None == dir:
-            dir = os.path.join(self.dir,time.strftime("%Y-%m-%d", time.localtime()))
+            dir = os.path.join(self.dir,time.strftime("%Y-%m-%d", time.localtime()),self.nn)
         os.makedirs(dir,exist_ok=True)
         image = self.genarateQR(content)
         ff = os.path.join(dir,str(filename)+'.png')
@@ -63,10 +65,21 @@ def main(script,excelFile):
     datas = ReadExcel(excelFile)
     q = QR(script,excelFile)
     nrows,ncols= datas.get_size()
+    id,code,ss = 0,1,2
+    for i in range(0,ncols):
+        data = datas.get(0,i).strip()
+        if '二维码编号' ==data:
+            id=i
+        elif '二维码内容' == data:
+            code=i
+        elif '状态' == data:
+            ss = i
     for x in range(1, nrows):
-        name = datas.get(x,0)
-        content = datas.get(x,1)
-        q.savePic(content,name)
+        status = datas.get(x,ss)
+        if '00' == status:
+            name = datas.get(x,id)
+            content = datas.get(x,code)
+            q.savePic(content,name)
         # threading.Thread(target=q.savePic,args=(content,name),).start()
 
 def readMe():
@@ -84,6 +97,7 @@ def readMe():
         李光宇 liguangyu@unionpay.com
     *****************************************使用方法**************************************
     将从银联小微平台上导出的excel拖动到本程序上即可
+    只将状态为00的商户生成二维码
     """
     with open('ReadMe.txt','w') as f:
         f.write(txt)
