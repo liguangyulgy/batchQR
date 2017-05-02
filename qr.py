@@ -1,5 +1,5 @@
 import qrcode,os,time,PIL
-from PIL import Image
+from PIL import Image,ImageDraw,ImageFont
 from io import BytesIO
 # from quickpass_logo import ql
 # import wx;
@@ -35,7 +35,7 @@ class QR:
         self.icon = Image.open(f)
         self.icon_w,self.icon_h = self.icon.size
 
-    def genarateQR(self,content):
+    def genarateQR(self,content,filename):
         qr = qrcode.QRCode(
             version=2,
             error_correction=qrcode.ERROR_CORRECT_H,
@@ -45,18 +45,30 @@ class QR:
         qr.add_data(content)
         qr.make(fit=True)
         img = qr.make_image().convert("RGBA")
+
         img_w, img_h = img.size
         w = int((img_w - self.icon_w) / 2)
         h = int((img_h - self.icon_h) / 2)
 
         img.paste(self.icon, (w, h), self.icon)
-        return img
+
+        imgb = Image.new('RGB', (img_w, img_h + 45), (255, 255, 255))
+        tf = ImageFont.load_default()
+        x,y = tf.getsize(filename)
+        imgt = Image.new('RGB',(x, y),(255,255,255))
+        draw = ImageDraw.Draw(imgt)
+        draw.text((0,0),filename,(0,0,0))
+        imgt = imgt.resize((3*x,3*y),Image.ANTIALIAS)
+        imgb.paste(img,(0,0))
+        location = (int((img_w-3*x)/2), img_h + 5)
+        imgb.paste(imgt,location)
+        return imgb
 
     def savePic(self,content,filename,dir=None):
         if None == dir:
             dir = os.path.join(self.dir,time.strftime("%Y-%m-%d", time.localtime()),self.nn)
         os.makedirs(dir,exist_ok=True)
-        image = self.genarateQR(content)
+        image = self.genarateQR(content,filename)
         ff = os.path.join(dir,str(filename)+'.png')
         print('商户号 %s  对应二维码%s' %(filename,content))
         image.save(ff)
